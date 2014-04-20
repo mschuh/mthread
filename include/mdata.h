@@ -11,6 +11,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef enum {
+	READY, RUNNING, BLOCKED FINISHED
+}state_t;
+
 typedef struct {
 	TCB TCBElement;
     TCBList * next;
@@ -19,6 +23,7 @@ typedef struct {
 typedef struct {
 	long int tid;
 	double time;
+	state_t state;
 	ucontext_t context;
 } TCB;
 

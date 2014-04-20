@@ -1,9 +1,9 @@
-TCBList* CreateList(void)
+TCBList* listcreate(void)
 {
        return NULL;
 }
 
-TCBList* Insert(TCBList* List, TCB Element)
+TCBList* insert(TCBList* List, TCB Element)
 {
        TCBList *new; //new element
 
@@ -14,7 +14,7 @@ TCBList* Insert(TCBList* List, TCB Element)
        return List;
 }   
 
-TipoPtNo* remove(TipoPtNo* ptLista, char titulo[20])
+TCBList* remove((TCBList* List, long int tid)
 {
      TipoPtNo *ant = NULL; //ponteiro auxiliar para a posiÁ„o anterior
      TipoPtNo *ptaux = ptLista; //ponteiro auxiliar para percorrer a lista
