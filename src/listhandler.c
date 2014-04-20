@@ -1,94 +1,62 @@
-TCBList* listcreate(void)
+TCBList* CreateList(void)
 {
        return NULL;
 }
 
-TCBList* insert(TCBList* List, TCB Element)
+TCBList* Insert(TCBList* list, TCB newElement)
 {
        TCBList *new; //new element
 
        new = (TCBList*) malloc(sizeof(TCBList)); //allocates the new node
-       new->TCBElement = Element; //inserts the information of the new node    
+       new->TCBElement = newElement; //inserts the information of the new node    
        List->next = new; //inserts the new node at the beggining of the list
 
-       return List;
+       return list;
 }   
 
-TCBList* remove((TCBList* List, long int tid)
+TCBList* SortList (void) //Sort by execTime, TO DO
 {
-     TipoPtNo *ant = NULL; //ponteiro auxiliar para a posiÁ„o anterior
-     TipoPtNo *ptaux = ptLista; //ponteiro auxiliar para percorrer a lista
 
-     /*procura o elemento na lista*/
-     while (ptaux !=NULL && (strcmp(ptaux->info.titulo, titulo)))
+}
+
+TCBList* Remove(TCBList* list, long int tid)
+{
+     TCBList *prev = NULL; //auxiliar pointer to the previous position
+     TCBList *ptaux = list; //auxiliar pointer to run through the list
+
+     //search for the element in the list
+     while (ptaux !=NULL && (ptaux->TCBElement.tid == tid))
      {          
-          ant = ptaux;
+          prev = ptaux;
           ptaux = ptaux->prox;
      }
      
-     /*verifica se achou*/
-     if (ptaux == NULL)
-       return ptLista; /*retorna a lista original*/
+     //verify if the element has been found
+
+     if (ptaux == NULL) //the element doesn't exist
+       return list; //returns the original list
        
-    if (ant == NULL) /*vai remover o primeiro elemento*/
-      ptLista = ptaux->prox;
-    else /*vai remover do meio ou do final*/
-      ant->prox = ptaux->prox;
+    if (prev == NULL) //the first element will be removed
+      list = ptaux->prox;
+
+    else //it'll remove from the middle or the end of the list
+      prev->prox = ptaux->prox;
       
-    free(ptaux); /*libera a memÛria alocada*/
+    free(ptaux); //frees the allocated memory
     
-    return ptLista;
+    return list;
 }  
  
-TipoPtNo* destroi(TipoPtNo* ptLista)
+TCBList* DeleteList(TCBList* list)
 {
-   TipoPtNo *ptaux; //ponteiro auxiliar para percorrer a lista
-   while (ptLista != NULL)
+   TCBList *ptaux; //auxiliar pointer to run through the list
+
+   while (list != NULL)
    {
-         ptaux = ptLista;
-         ptLista = ptLista->prox;
+         ptaux = list;
+         list = list->prox;
          free(ptaux);
    }
-   free(ptLista);   
+   free(list);   
    return NULL;            
 }   
-
-
-void imprimeInv(TipoPtNo* ptLista)
-{  
-     TipoPtNo* ptaux;
-     int numelem, i;
-     
-      numelem=0;
-      ptaux = ptLista;
-      
-      while (ptaux!=NULL)
-       {
-             ptaux = ptaux->prox;
-             numelem++;
-       }
-       
-      while (numelem>=1)
-        {
-            ptaux = ptLista;
-            i=1;
-            while(i<numelem)
-             {
-                 i++;
-                 ptaux = ptaux->prox;
-             }
-             printf("Titulo = %s Distribuidor = %s Diretor = %s\n",ptaux->info.titulo,ptaux->info.distr,ptaux->info.diretor);
-             numelem--;
-        }    
-}    
-
-void imprimeRec(TipoPtNo* ptLista)
-{  
-
-     if (ptLista != NULL)
-     {
-     imprimeRec(ptLista->prox);
-     printf("Titulo = %s Distribuidor = %s Diretor = %s\n",ptLista->info.titulo,ptLista->info.distr,ptLista->info.diretor);
-    
-     }
-}    

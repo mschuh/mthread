@@ -17,12 +17,12 @@ typedef enum {
 
 typedef struct {
 	TCB TCBElement;
-    TCBList * next;
+    TCBlist * next;
 } TCBList;
 
 typedef struct {
 	long int tid;
-	double time;
+	double execTime;
 	state_t state;
 	ucontext_t context;
 } TCB;
