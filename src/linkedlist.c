@@ -3,7 +3,7 @@ TCBList* CreateList(void)
        return NULL;
 }
 
-TCBList* Insert(TCBList* list, TCB newElement)
+TCBList* Insert(TCBList* list, TCB* newElement)
 {
        TCBList *new_node; //new element
 
@@ -93,9 +93,9 @@ TCBList* SelectPivot(TCBList* list)
 TCBList* SortList (TCBList* list) //Sort by execTime
 {
     int flag = 0;
-	// Return NULL list
+  // Return NULL list
     if (ListLength(list) <= 1)
-	return list;
+  return list;
 
     TCBList *less=NULL, *more=NULL, *next, *end, *ptaux = NULL;
 

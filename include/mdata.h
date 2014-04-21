@@ -7,29 +7,32 @@
 #ifndef __mdata__
 #define	__mdata__ 1
 
+#define ERROR_CODE -1
+
 #include <ucontext.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 typedef enum {
-	READY, RUNNING, BLOCKED FINISHED
+	READY, RUNNING, BLOCKED, FINISHED
 }state_t;
 
 typedef struct {
-	TCB TCBElement;
-    TCBlist * next;
-} TCBList;
-
-typedef struct {
-	long int tid;
+	ucontext_t context;
+	int tid;
 	double execTime;
 	state_t state;
-	ucontext_t context;
 } TCB;
+
+typedef struct {
+	TCB* TCBElement;
+    TCBList* next;
+} TCBList;
 
 typedef mutex {
 	int flag;
 	TCB * next;
 } mmutex_t;
+
 
 #endif
