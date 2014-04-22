@@ -1,6 +1,55 @@
+//Creates a list
 TCBList* CreateList(void)
 {
        return NULL;
+}
+
+TCBList* Pop(TCBList* list)
+{
+    TCBList* ptaux = list;
+
+    if (ptaux == NULL) //If list is empty
+        return list;
+
+    list = list->next;
+
+    free(ptaux);
+
+    return list;
+}
+
+TCBList* Insert_Sort(TCBList* list, TCB* newElement)
+{
+       TCBList *new_node; //new element
+       TCBList *ant = NULL; //auxiliar pointer to the previous position
+       TCBList *ptaux = list; //auxiliar pointer to run through the list
+
+       //allocates the new node
+       new_node = (TCBList*) malloc(sizeof(TCBList));
+
+       //inserts the information of the new node
+       new_node->TCBElement = newElement;
+
+       //search for the right position
+       while ((ptaux!=NULL) && (ptaux->TCBElement->execTime <= newElement->execTime)) //se info.titulo < dados.titulo então strcmp retorna um valor menor que zero
+       {
+             ant = ptaux;
+             ptaux = ptaux->next;
+       }
+
+       //insert the element
+       if (ant == NULL) //first position
+       {
+               new_node->next = list;
+               list = new_node;
+       }
+       else
+       {
+            new_node->next = ant->next;
+            ant->next = new_node;
+       }
+
+       return list;
 }
 
 TCBList* Insert(TCBList* list, TCB* newElement)
@@ -22,7 +71,7 @@ TCBList* Remove(TCBList* list, long int tid)
      TCBList *ptaux = list; //auxiliar pointer to run through the list
 
      //search for the element in the list
-     while (ptaux !=NULL && (ptaux->TCBElement.tid != tid))
+     while (ptaux !=NULL && (ptaux->TCBElement->tid != tid))
      {          
           prev = ptaux;
           ptaux = ptaux->next;
@@ -80,8 +129,8 @@ void printList(TCBList* list)
     printf("\nList Nodes\n");
     while(node!=NULL)
     {
-        printf("TID: %i ", node->TCBElement.tid);
-        printf("ExecTime: %i ", node->TCBElement.execTime);
+        printf("TID: %i ", node->TCBElement->tid);
+        printf("ExecTime: %i ", node->TCBElement->execTime);
         node=node->next;
     }
 }
@@ -135,7 +184,7 @@ TCBList* SortList (TCBList* list) //Sort by execTime
     {
         next = ptaux->next;
 
-        if(ptaux->TCBElement.execTime <= pivot->TCBElement.execTime)
+        if(ptaux->TCBElement->execTime <= pivot->TCBElement->execTime)
         {
             ptaux->next = less;
             less = ptaux;
