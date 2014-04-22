@@ -1,20 +1,26 @@
+#include "../include/linkedlist.h"
+#include <stdio.h>
+#include <stdlib.h>
+
 TCBList* CreateList(void)
 {
        return NULL;
 }
 
-TCBList* Pop(TCBList* list)
+TCB* Pop(TCBList* list)
 {
+    TCB* popped = (TCB*)malloc(sizeof(TCB));
     TCBList* ptaux = list;
 
     if (ptaux == NULL) //If list is empty
         return list;
 
+    popped = list->TCBElement;
     list = list->next;
 
     free(ptaux);
 
-    return list;
+    return popped;
 }
 
 TCBList* Insert_Sort(TCBList* list, TCB* newElement)
@@ -64,13 +70,14 @@ TCBList* Insert(TCBList* list, TCB* newElement)
        return list;
 }
 
-TCBList* Remove(TCBList* list, long int tid)
+TCB* Remove(TCBList* list, int waitingThread)
 {
+     TCB* removed = (TCB*)malloc(sizeof(TCB));
      TCBList *prev = NULL; //auxiliar pointer to the previous position
      TCBList *ptaux = list; //auxiliar pointer to run through the list
 
      //search for the element in the list
-     while (ptaux !=NULL && (ptaux->TCBElement->tid != tid))
+     while (ptaux !=NULL && (ptaux->TCBElement->waitingThread != waitingThread))
      {          
           prev = ptaux;
           ptaux = ptaux->next;
@@ -87,9 +94,10 @@ TCBList* Remove(TCBList* list, long int tid)
     else //it'll remove from the middle or the end of the list
       prev->next = ptaux->next;
       
+    removed = ptaux->TCBElement ;
     free(ptaux); //frees the allocated memory
     
-    return list;
+    return removed;
 }  
  
 TCBList* DeleteList(TCBList* list)
@@ -99,7 +107,7 @@ TCBList* DeleteList(TCBList* list)
    while (list != NULL)
    {
          ptaux = list;
-         list = list->prox;
+         list = list->next;
          free(ptaux);
    }
    free(list);   
@@ -129,7 +137,7 @@ void printList(TCBList* list)
     while(node!=NULL)
     {
         printf("TID: %i ", node->TCBElement->tid);
-        printf("ExecTime: %i ", node->TCBElement->execTime);
+        printf("ExecTime: %f ", node->TCBElement->execTime);
         node=node->next;
     }
 }
@@ -154,7 +162,6 @@ TCBList* SelectPivot(TCBList* list)
 
 TCBList* SortList (TCBList* list) //Sort by execTime
 {
-    int flag = 0;
   // Return NULL list
     if (ListLength(list) <= 1)
   return list;

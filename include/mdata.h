@@ -4,8 +4,8 @@
 *				e a estrutura empregada para o mutex.
 */
 
-#ifndef __mdata__
-#define	__mdata__ 1
+#ifndef MDATA_H
+#define	MDATA_H
 
 #define ERROR_CODE -1
 
@@ -25,15 +25,14 @@ typedef struct {
 	state_t state;
 } TCB;
 
-typedef struct {
+typedef struct TCBList{
 	TCB* TCBElement;
-    TCBList* next;
-} TCBList;
+    struct TCBList* next;
+}TCBList;
 
-typedef mutex {
+typedef struct {
 	int flag;
 	TCB * next;
 } mmutex_t;
-
 
 #endif

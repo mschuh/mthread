@@ -8,7 +8,7 @@
 #ifndef __mthread__
 #define __mthread__ 1
 
-#include "mdata.h”"  /* arquivo de inclusão com as estruturas de dados definidas pelo
+#include "mdata.h"  /* arquivo de inclusão com as estruturas de dados definidas pelo
                      * grupo na implementação do trabalho. Inclui a estrutura TCB e a
                      * estrutura empregada para o mutex, como por exemplo:
                      *

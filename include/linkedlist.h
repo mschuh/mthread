@@ -1,17 +1,15 @@
-#ifndef __linkedlist__
-#define	__linkedlist__ 1
+#ifndef LINKEDLIST_H
+#define	LINKEDLIST_H
 
-#include "mdata.h";
-
-typedef struct {
-	TCB TCBElement;
-    TCBList * next;
-} TCBList;
+#include <stdio.h>
+#include <stdlib.h>
+#include "mdata.h"
 
 TCBList* CreateList(void);
+TCB* Pop(TCBList* list);
 TCBList* Insert(TCBList* list, TCB* newElement);
 TCBList* SortList (TCBList* list);
-TCBList* Remove(TCBList* list, long int tid);
+TCB* Remove(TCBList* list, long int tid);
 TCBList* DeleteList(TCBList* list);
 
-#endif;
+#endif
