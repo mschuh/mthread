@@ -1,5 +1,3 @@
-//não sei totalmente o que vai aqui mas sei que as listas de apto, bloqueado e bla bla são por aquis
-
 #include "../include/mthread.h"
 #include "../include/linkedlist.h"
 
@@ -31,10 +29,16 @@ int mcreate (void (*start_routine)(void*), void *arg)
 				mainThread->context = mainContext;
 
 				//sets mainContext return point, allocates stack and defines its size
-				mainThread->context = mainContext;
 				mainThread->context.uc_stack.ss_sp = (char*)malloc(sizeof(stack));
 				mainThread->context.uc_stack.ss_size = sizeof(stack);
 				mainThread->context.uc_link = NULL; //return point when main ends should be null
+
+				//creates context for scheduler function
+				CreateSchedulerContext();
+
+				//creates context for exit thread function
+				CreateExitThreadContext();
+
 			}
 			else
 				return ERROR_CODE;
@@ -55,7 +59,7 @@ int mcreate (void (*start_routine)(void*), void *arg)
 			//sets newThread return point, allocates stack and defines its size
 			newThread->context.uc_stack.ss_sp = (char*)malloc(sizeof(stack));
 			newThread->context.uc_stack.ss_size = sizeof(stack);
-			//newThread->context.uc_link = ?;  praonde vai, vai pra antes do escalonador, ver se tem alguem esperando por elas
+			newThread->context.uc_link = exitThreadContext;
 			makecontext (&(newThread->context), (void (*)(void))start_routine, 1, arg);
 			readyList = Insert (readyList, newThread);
 
@@ -87,7 +91,35 @@ TCB* CreateTCB (void)
 	return newTCB; //if an error occured during the malloc it won't occupy the tid and return NULL anyway
 }
 
+void CreateSchedulerContext (void)
+{
+	getcontext (&schedulerContext);
+	schedulerContext.uc_stack = (char*)malloc(sizeof(stack));
+	schedulerContext.uc_stack.ss_size = sizeof(stack);
+	schedulerContext.uc_link = NULL;
+	makecontext (&schedulerContext, (void (*)(void))Scheduler, 0);
+}
 
+void CreateExitThreadContext (void)
+{
+	getcontext (&exitThreadContext);
+	exitThreadContext.uc_stack = (char*)malloc(sizeof(stack));
+	exitThreadContext.uc_stack.ss_size = sizeof(stack);
+	exitThreadContext.uc_link = NULL;
+	makecontext (&exitThreadContext, (void (*)(void))ExitThread, 0);
+
+}
+
+/* Fornece o temporizador no momento da chamada (em usec)*/
+double	GetTime(void)
+{
+   struct  timeval time;
+   double  Time;
+   
+   gettimeofday(&time, (struct timezone *) NULL);
+   Time = ((double)time.tv_sec*1000000.0 + (double)time.tv_usec);
+   return(Time);
+}
 
 int myield(void)
 {
@@ -100,5 +132,21 @@ int mjoin(int thr)
 {
 	runningThread->state = BLOCKED;
 	runningThread->waitingThread = thr;
+	blockedList = Insert (blockedList, runningThread);
 	return Scheduler();
 }
+
+int Scheduler (void)
+{
+	runningThread = pop (readyList);
+	runningThread->state = RUNNING;
+	setcontext(&(runningThread->context));
+}
+
+void ExitThread (void)
+{
+	
+
+}
+
+
