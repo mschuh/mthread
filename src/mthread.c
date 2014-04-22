@@ -5,6 +5,7 @@ TCBList* readyList = NULL;
 TCBList* blockedList NULL;
 TCB* runningThread = NULL;
 int tidCounter = 0;
+double	t0, t1;
 
 ucontext_t mainContext;
 ucontext_t schedulerContext;
@@ -123,6 +124,8 @@ double	GetTime(void)
 
 int myield(void)
 {
+	t1 = GetTime();
+	runningThread->execTime = t1 - t0;
 	runningThread->state = READY;
 	readyList = Insert (readyList, runningThread); //tem que inserir de maneira ordenadas, zuous
 	return Scheduler(); 
@@ -130,6 +133,8 @@ int myield(void)
 
 int mjoin(int thr)
 {
+	t1 = GetTime();
+	runningThread->execTime = t1 - t0;
 	runningThread->state = BLOCKED;
 	runningThread->waitingThread = thr;
 	blockedList = Insert (blockedList, runningThread);
@@ -140,13 +145,25 @@ int Scheduler (void)
 {
 	runningThread = pop (readyList);
 	runningThread->state = RUNNING;
+	t0 = GetTime();
 	setcontext(&(runningThread->context));
 }
 
 void ExitThread (void)
 {
-	
+	TCB* blockedThread;
 
+	blockedThread = Remove(blockedList, runningThread->id);
+	
+	if (blockedThread != NULL)
+	{
+		blockedThread->state = READY;
+		blockedThread->waitingThread = -1;
+		readyList = Insert(readyList, blockedThread);
+		setcontext(&schedulerContext);
+	}
+	else
+		return NULL;
 }
 
 

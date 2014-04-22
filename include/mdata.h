@@ -20,6 +20,7 @@ typedef enum {
 typedef struct {
 	ucontext_t context;
 	int tid;
+	int waitingThread;
 	double execTime;
 	state_t state;
 } TCB;
