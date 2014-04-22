@@ -1,4 +1,3 @@
-//Creates a list
 TCBList* CreateList(void)
 {
        return NULL;
