@@ -13,7 +13,7 @@ TCB* Pop(TCBList* list)
     TCBList* ptaux = list;
 
     if (ptaux == NULL) //If list is empty
-        return list;
+        return NULL;
 
     popped = list->TCBElement;
     list = list->next;
@@ -23,7 +23,7 @@ TCB* Pop(TCBList* list)
     return popped;
 }
 
-TCBList* Insert_Sort(TCBList* list, TCB* newElement)
+TCBList* InsertSorted(TCBList* list, TCB* newElement)
 {
        TCBList *new_node; //new element
        TCBList *ant = NULL; //auxiliar pointer to the previous position
@@ -36,7 +36,7 @@ TCBList* Insert_Sort(TCBList* list, TCB* newElement)
        new_node->TCBElement = newElement;
 
        //search for the right position
-       while ((ptaux!=NULL) && (ptaux->TCBElement->execTime <= newElement->execTime)) //se info.titulo < dados.titulo então strcmp retorna um valor menor que zero
+       while ((ptaux!=NULL) && (ptaux->TCBElement->execTime <= newElement->execTime))
        {
              ant = ptaux;
              ptaux = ptaux->next;
@@ -86,7 +86,7 @@ TCB* Remove(TCBList* list, int waitingThread)
      //verify if the element has been found
 
      if (ptaux == NULL) //the element doesn't exist
-       return list; //returns the original list
+       return NULL; //returns the original list
        
     if (prev == NULL) //the first element will be removed
       list = ptaux->next;

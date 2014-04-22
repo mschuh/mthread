@@ -155,7 +155,7 @@ int myield(void)
 	t1 = GetTime();
 	runningThread->execTime = t1 - t0;
 	runningThread->state = READY;
-	readyList = Insert (readyList, runningThread); //tem que inserir de maneira ordenadas, zuous
+	readyList = InsertSorted(readyList, runningThread);
 	return Scheduler(); 
 }
 
