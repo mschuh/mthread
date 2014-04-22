@@ -72,6 +72,20 @@ int ListLength (TCBList* list)
     return i;
 }
 
+//Print nodes by TID and ExecTime
+void printList(TCBList* list)
+{
+    TCBList* node;
+    node=list;
+    printf("\nList Nodes\n");
+    while(node!=NULL)
+    {
+        printf("TID: %i ", node->TCBElement.tid);
+        printf("ExecTime: %i ", node->TCBElement.execTime);
+        node=node->next;
+    }
+}
+
 // Selects a random pivot point
 TCBList* SelectPivot(TCBList* list)
 {
