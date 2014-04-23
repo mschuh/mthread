@@ -99,6 +99,33 @@ TCB* Remove(TCBList* list, int waitingThread)
     
     return removed;
 }  
+
+TIDList* Remove_tid(TIDList* list, int tid)
+{
+    TCBList *prev = NULL;
+    TIDList* ptaux = list;
+
+    while (ptaux !=NULL && (ptaux->tid != tid))
+     {          
+          prev = ptaux;
+          ptaux = ptaux->next;
+     }
+     
+     //verify if the element has been found
+
+     if (ptaux == NULL) //the element doesn't exist
+       return NULL;
+       
+    if (prev == NULL) //the first element will be removed
+      list = ptaux->next;
+
+    else //it'll remove from the middle or the end of the list
+      prev->next = ptaux->next;
+      
+    free(ptaux); //frees the allocated memory
+
+    return list;
+}
  
 TCBList* DeleteList(TCBList* list)
 {
