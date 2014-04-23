@@ -23,7 +23,7 @@ TCB* Pop(TCBList* list)
     return popped;
 }
 
-TCBList* InsertSorted(TCBList* list, TCB* newElement)
+void InsertSorted(TCBList* list, TCB* newElement)
 {
        TCBList *new_node; //new element
        TCBList *ant = NULL; //auxiliar pointer to the previous position
@@ -53,11 +53,9 @@ TCBList* InsertSorted(TCBList* list, TCB* newElement)
             new_node->next = ant->next;
             ant->next = new_node;
        }
-
-       return list;
 }
 
-TCBList* Insert(TCBList* list, TCB* newElement)
+void Insert(TCBList* list, TCB* newElement)
 {
        TCBList *new_node; //new element
 
@@ -66,8 +64,6 @@ TCBList* Insert(TCBList* list, TCB* newElement)
 
        new_node->next = list;
        list = new_node;
-
-       return list;
 }
 
 TCB* Remove(TCBList* list, int waitingThread)
@@ -78,55 +74,54 @@ TCB* Remove(TCBList* list, int waitingThread)
 
      //search for the element in the list
      while (ptaux !=NULL && (ptaux->TCBElement->waitingThread != waitingThread))
-     {          
+     {
           prev = ptaux;
           ptaux = ptaux->next;
      }
-     
+
      //verify if the element has been found
 
      if (ptaux == NULL) //the element doesn't exist
        return NULL; //returns the original list
-       
+
     if (prev == NULL) //the first element will be removed
       list = ptaux->next;
 
     else //it'll remove from the middle or the end of the list
       prev->next = ptaux->next;
-      
+
     removed = ptaux->TCBElement ;
     free(ptaux); //frees the allocated memory
-    
+
     return removed;
-}  
-
-TIDList* Remove_tid(TIDList* list, int tid)
-{
-    TCBList *prev = NULL;
-    TIDList* ptaux = list;
-
-    while (ptaux !=NULL && (ptaux->tid != tid))
-     {          
-          prev = ptaux;
-          ptaux = ptaux->next;
-     }
-     
-     //verify if the element has been found
-
-     if (ptaux == NULL) //the element doesn't exist
-       return NULL;
-       
-    if (prev == NULL) //the first element will be removed
-      list = ptaux->next;
-
-    else //it'll remove from the middle or the end of the list
-      prev->next = ptaux->next;
-      
-    free(ptaux); //frees the allocated memory
-
-    return list;
 }
- 
+
+int searchTID (TCBList* list, int tid)
+{
+    TCBList* ptaux = list;
+    while (ptaux != NULL)
+    {
+        if(ptaux->TCBElement->tid == tid)
+            return SUCESS_CODE;
+        ptaux = ptaux->next;
+    }
+
+    return ERROR_CODE;
+}
+
+int searchWaiting(TCBList* list, int tid)
+{
+    TCBList* ptaux = list;
+    while (ptaux != NULL)
+    {
+        if(ptaux->TCBElement->waitingThread == tid)
+            return SUCESS_CODE;
+        ptaux = ptaux->next;
+    }
+
+    return ERROR_CODE;
+}
+
 TCBList* DeleteList(TCBList* list)
 {
    TCBList *ptaux; //auxiliar pointer to run through the list
@@ -137,9 +132,9 @@ TCBList* DeleteList(TCBList* list)
          list = list->next;
          free(ptaux);
    }
-   free(list);   
-   return NULL;            
-}   
+   free(list);
+   return NULL;
+}
 
 //Finds length of list, which is usefull in selecting a random pivot
 int ListLength (TCBList* list)
@@ -208,7 +203,7 @@ TCBList* SortList (TCBList* list) //Sort by execTime
             list->next = ptaux;
             ptaux = list;
         }
-        
+
         list = next;
     }
 
