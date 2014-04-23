@@ -7,21 +7,22 @@ TCBList* CreateList(void)
        return NULL;
 }
 
-TCB* Pop(TCBList* list)
+TCB* Pop(TCBList** list)
 {
     TCB* popped = (TCB*)malloc(sizeof(TCB));
-    TCBList* ptaux = list;
+    TCBList* ptaux = *list;
 
     if (ptaux == NULL) //If list is empty
         return NULL;
 
-    popped = list->TCBElement;
-    list = list->next;
+    popped = ptaux->TCBElement;
+    *list = ptaux->next;
 
     free(ptaux);
 
     return popped;
 }
+
 
 TCBList* InsertSorted(TCBList* list, TCB* newElement)
 {
@@ -70,11 +71,11 @@ TCBList* Insert(TCBList* list, TCB* newElement)
        return list;
 }
 
-TCB* RemoveWaiting(TCBList* list, int waitingThread)
+TCB* RemoveWaiting(TCBList** list, int waitingThread)
 {
      TCB* removed = (TCB*)malloc(sizeof(TCB));
      TCBList *prev = NULL; //auxiliar pointer to the previous position
-     TCBList *ptaux = list; //auxiliar pointer to run through the list
+     TCBList *ptaux = *list; //auxiliar pointer to run through the list
 
      //search for the element in the list
      while (ptaux !=NULL && (ptaux->TCBElement->waitingThread != waitingThread))
@@ -89,7 +90,7 @@ TCB* RemoveWaiting(TCBList* list, int waitingThread)
        return NULL; //returns the original list
 
     if (prev == NULL) //the first element will be removed
-      list = ptaux->next;
+      *list = ptaux->next;
 
     else //it'll remove from the middle or the end of the list
       prev->next = ptaux->next;
@@ -100,10 +101,10 @@ TCB* RemoveWaiting(TCBList* list, int waitingThread)
     return removed;
 }
 
-void Remove(TCBList* list, int tid)
+void Remove(TCBList** list, int tid)
 {
      TCBList *prev = NULL; //auxiliar pointer to the previous position
-     TCBList *ptaux = list; //auxiliar pointer to run through the list
+     TCBList *ptaux = *list; //auxiliar pointer to run through the list
 
      //search for the element in the list
      while (ptaux !=NULL && (ptaux->TCBElement->tid != tid))
@@ -115,11 +116,12 @@ void Remove(TCBList* list, int tid)
      //verify if the element has been found
 
     if (prev == NULL) //the first element will be removed
-      list = ptaux->next;
+      *list = ptaux->next;
 
     else //it'll remove from the middle or the end of the list
       prev->next = ptaux->next;
-
+      
+      free(ptaux);
 }
 
 int searchTID (TCBList* list, int tid)
