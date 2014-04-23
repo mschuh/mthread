@@ -11,6 +11,7 @@ TCBList* Insert(TCBList* list, TCB* newElement);
 TCBList* InsertSorted(TCBList* list, TCB* newElement);
 TCBList* SortList (TCBList* list);
 TCB* Remove(TCBList* list, int waitingThread);
+TIDList* Remove_tid(TIDList* list, int tid)
 TCBList* DeleteList(TCBList* list);
 
 #endif
