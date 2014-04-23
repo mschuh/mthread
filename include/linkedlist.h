@@ -7,11 +7,13 @@
 
 TCBList* CreateList(void);
 TCB* Pop(TCBList* list);
-TCBList* Insert(TCBList* list, TCB* newElement);
-TCBList* InsertSorted(TCBList* list, TCB* newElement);
+void Insert(TCBList* list, TCB* newElement);
+void InsertSorted(TCBList* list, TCB* newElement);
 TCBList* SortList (TCBList* list);
 TCB* Remove(TCBList* list, int waitingThread);
-TIDList* Remove_tid(TIDList* list, int tid)
 TCBList* DeleteList(TCBList* list);
+int searchTID (TCBList* list, int tid);
+int searchWaiting(TCBList* list, int tid);
+
 
 #endif
