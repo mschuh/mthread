@@ -116,6 +116,8 @@ void Remove(TCBList* list, int tid)
     else //it'll remove from the middle or the end of the list
       prev->next = ptaux->next;
 
+    removed = ptaux->TCBElement ;
+    free(ptaux); //frees the allocated memory
 }
 
 int searchTID (TCBList* list, int tid)

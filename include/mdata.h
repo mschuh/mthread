@@ -1,5 +1,5 @@
 /*
-*	mdata.h:	arquivo de inclusão com as estruturas de dados definidas para a 
+*	mdata.h:	arquivo de inclusão com as estruturas de dados definidas para a
 *				implementação do trabalho. Inclui a estrutura TCB (Thread Control Block)
 *				e a estrutura empregada para o mutex.
 */
@@ -8,6 +8,7 @@
 #define	MDATA_H
 
 #define ERROR_CODE -1
+#define SUCESS_CODE 0
 
 #include <ucontext.h>
 #include <stdio.h>
@@ -21,6 +22,7 @@ typedef struct {
 	ucontext_t context;
 	int tid;
 	int waitingThread;
+	int contextFlag;
 	double execTime;
 	state_t state;
 } TCB;

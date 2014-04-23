@@ -188,6 +188,7 @@ int mjoin(int thr)
         	return ERROR_CODE;
 	else if (searchTID(aliveList, thr) == SUCESS_CODE)
 	{
+		printf ("oi");
 		runningThread->state = BLOCKED;
 		runningThread->waitingThread = thr;
 		Insert (blockedList, runningThread);
