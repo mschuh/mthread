@@ -72,7 +72,7 @@ void ExitThread (void)
 	{
 		blockedThread->state = READY;
 		blockedThread->waitingThread = -1;
-		Insert(readyList, blockedThread);
+		readyList = InsertSorted(readyList, blockedThread);
 	}
 
 	Remove(aliveList, runningThread->tid);
@@ -106,7 +106,7 @@ int mcreate (void (*start_routine)(void*), void *arg)
 				mainThread->state = RUNNING; //the first thread running is the main
 				runningThread = mainThread;
 
-				Insert(aliveList, mainThread);
+				aliveList = Insert(aliveList, mainThread);
 
 				//sets mainContext return point, allocates stack and defines its size
                 		mainThread->context = mainContext;
@@ -142,9 +142,9 @@ int mcreate (void (*start_routine)(void*), void *arg)
 			newThread->context.uc_stack.ss_size = sizeof(stack);
 			newThread->context.uc_link = &exitThreadContext;
 			makecontext (&(newThread->context), (void (*)(void))start_routine, 1, arg);
-			Insert (readyList, newThread);
+			readyList = InsertSorted(readyList, newThread);
 
-			Insert(aliveList, newThread);
+			aliveList = Insert(aliveList, newThread);
 
 			return newThread->tid;
 		}
@@ -164,7 +164,7 @@ int myield(void)
 	t1 = GetTime();
 	runningThread->execTime = t1 - t0;
 	runningThread->state = READY;
-	InsertSorted(readyList, runningThread);
+	readyList = InsertSorted(readyList, runningThread);
 
 	runningThread->contextFlag = 0;
 	getcontext(&(runningThread->context));
@@ -190,7 +190,7 @@ int mjoin(int thr)
 	{
 		runningThread->state = BLOCKED;
 		runningThread->waitingThread = thr;
-		Insert (blockedList, runningThread);
+		blockedList = Insert(blockedList, runningThread);
 	
 		runningThread->contextFlag = 0;
 		getcontext(&(runningThread->context));
@@ -204,7 +204,7 @@ int mjoin(int thr)
 	else
 	{
 		runningThread->state = READY;
-		Insert (readyList, runningThread);
+		readyList = InsertSorted(readyList, runningThread);
 	
 		runningThread->contextFlag = 0;
 		getcontext(&(runningThread->context));
