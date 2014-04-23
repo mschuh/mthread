@@ -46,7 +46,7 @@ TCB* CreateTCB (void)
 
 int Scheduler (void)
 {
-	runningThread = Pop(readyList);
+	runningThread = Pop(&readyList);
 	runningThread->state = RUNNING;
 	t0 = GetTime();
 	return setcontext(&(runningThread->context));
@@ -66,7 +66,7 @@ void ExitThread (void)
 {
 	TCB* blockedThread;
 
-	blockedThread = RemoveWaiting(blockedList, runningThread->tid);
+	blockedThread = RemoveWaiting(&blockedList, runningThread->tid);
 
 	if (blockedThread != NULL)
 	{
@@ -75,7 +75,7 @@ void ExitThread (void)
 		readyList = InsertSorted(readyList, blockedThread);
 	}
 
-	Remove(aliveList, runningThread->tid);
+	Remove(&aliveList, runningThread->tid);
 	setcontext(&schedulerContext);
 }
 
