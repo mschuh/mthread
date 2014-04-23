@@ -6,7 +6,7 @@
 
 TCBList* readyList = NULL;
 TCBList* blockedList = NULL;
-TIDList* ZoombieList = NULL;
+TCBList* aliveList = NULL;
 TCB* runningThread = NULL;
 int tidCounter = 0;
 char stack[SIGSTKSZ]; //reference stack
@@ -72,12 +72,10 @@ void ExitThread (void)
 	{
 		blockedThread->state = READY;
 		blockedThread->waitingThread = -1;
-		readyList = Insert(readyList, blockedThread);
+		Insert(readyList, blockedThread);
 	}
-	else
-	{
-	    Insert(ZoombieList, runningThread->tid);
-	}
+
+	Remove(aliveList, runningThread);
 	setcontext(&schedulerContext);
 }
 
@@ -107,9 +105,11 @@ int mcreate (void (*start_routine)(void*), void *arg)
 				//sets main TCB parameters
 				mainThread->state = RUNNING; //the first thread running is the main
 				runningThread = mainThread;
-				mainThread->context = mainContext;
+
+				Insert(aliveList, mainThread);
 
 				//sets mainContext return point, allocates stack and defines its size
+                mainThread->context = mainContext;
 				mainThread->context.uc_stack.ss_sp = (char*)malloc(sizeof(stack));
 				mainThread->context.uc_stack.ss_size = sizeof(stack);
 				mainThread->context.uc_link = NULL; //return point when main ends should be null
@@ -142,7 +142,9 @@ int mcreate (void (*start_routine)(void*), void *arg)
 			newThread->context.uc_stack.ss_size = sizeof(stack);
 			newThread->context.uc_link = &exitThreadContext;
 			makecontext (&(newThread->context), (void (*)(void))start_routine, 1, arg);
-			readyList = Insert (readyList, newThread);
+			Insert (readyList, newThread);
+
+			Insert(aliveList, newThread);
 
 			return newThread->tid;
 		}
@@ -156,11 +158,24 @@ int mcreate (void (*start_routine)(void*), void *arg)
 
 int myield(void)
 {
+    if (runningThread == NULL)
+        return ERROR_CODE;
+
 	t1 = GetTime();
 	runningThread->execTime = t1 - t0;
 	runningThread->state = READY;
-	readyList = InsertSorted(readyList, runningThread);
-	return Scheduler();
+	InsertSorted(readyList, runningThread);
+
+	runningThread->contextFlag = 0
+	getcontext(&(runningThread->context));
+	if (runningThread->contextFlag == 0)
+	{
+        runningThread->contextFlag == 1
+        if (Scheduler() == ERROR_CODE)
+            return ERROR_CODE;
+	}
+
+    return SUCESS_CODE;
 }
 
 int mjoin(int thr)
@@ -168,17 +183,39 @@ int mjoin(int thr)
 	t1 = GetTime();
 	runningThread->execTime = t1 - t0;
 
-	TIDList* ptaux;
-	if ((ptaux = Remove_tid(ZoombieList, thr)) != NULL)
-		runningThread->state = READY;
-		ZoombieList = ptaux;
-	else
+	if (thr > tidCounter || thr < 0 || (searchWaiting(aliveList, thr) == SUCESS_CODE))
+        	return ERROR_CODE;
+	else if (searchTID(aliveList, thr) == SUCESS_CODE)
 	{
 		runningThread->state = BLOCKED;
 		runningThread->waitingThread = thr;
-		blockedList = Insert (blockedList, runningThread);
+		Insert (blockedList, runningThread);
+	
+		runningThread->contextFlag = 0
+		getcontext(&(runningThread->context));
+		if (runningThread->contextFlag == 0)
+		{
+		    runningThread->contextFlag == 1
+		    if (Scheduler() == ERROR_CODE)
+		        return ERROR_CODE;
+		}
 	}
-	return Scheduler();
+	else
+	{
+		runningThread->state = READY;
+		Insert (readyList, runningThread);
+	
+		runningThread->contextFlag = 0
+		getcontext(&(runningThread->context));
+		if (runningThread->contextFlag == 0)
+		{
+		    runningThread->contextFlag == 1
+		    if (Scheduler() == ERROR_CODE)
+		        return ERROR_CODE;
+		}
+	}
+
+	return SUCESS_CODE;
 }
 
 
