@@ -30,6 +30,11 @@ typedef struct TCBList{
     struct TCBList* next;
 }TCBList;
 
+typedef struct TIDList{
+	int tid
+	struct TIDList* next;
+}TIDList;
+
 typedef struct {
 	int flag;
 	TCB * next;
