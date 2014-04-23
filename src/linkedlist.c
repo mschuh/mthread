@@ -23,7 +23,7 @@ TCB* Pop(TCBList* list)
     return popped;
 }
 
-void InsertSorted(TCBList* list, TCB* newElement)
+TCBList* InsertSorted(TCBList* list, TCB* newElement)
 {
        TCBList *new_node; //new element
        TCBList *ant = NULL; //auxiliar pointer to the previous position
@@ -53,9 +53,11 @@ void InsertSorted(TCBList* list, TCB* newElement)
             new_node->next = ant->next;
             ant->next = new_node;
        }
+       
+       return list;
 }
 
-void Insert(TCBList* list, TCB* newElement)
+TCBList* Insert(TCBList* list, TCB* newElement)
 {
        TCBList *new_node; //new element
 
@@ -64,6 +66,8 @@ void Insert(TCBList* list, TCB* newElement)
 
        new_node->next = list;
        list = new_node;
+       
+       return list;
 }
 
 TCB* RemoveWaiting(TCBList* list, int waitingThread)
