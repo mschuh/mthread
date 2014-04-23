@@ -6,6 +6,7 @@
 
 TCBList* readyList = NULL;
 TCBList* blockedList = NULL;
+TIDList* ZoombieList = NULL;
 TCB* runningThread = NULL;
 int tidCounter = 0;
 char stack[SIGSTKSZ]; //reference stack
@@ -20,7 +21,7 @@ double	GetTime(void)
 {
    struct  timeval time;
    double  Time;
-   
+
    gettimeofday(&time, (struct timezone *) NULL);
    Time = ((double)time.tv_sec*1000000.0 + (double)time.tv_usec);
    return(Time);
@@ -66,15 +67,18 @@ void ExitThread (void)
 	TCB* blockedThread;
 
 	blockedThread = Remove(blockedList, runningThread->tid);
-	
+
 	if (blockedThread != NULL)
 	{
 		blockedThread->state = READY;
 		blockedThread->waitingThread = -1;
 		readyList = Insert(readyList, blockedThread);
-		setcontext(&schedulerContext);
 	}
-
+	else
+	{
+	    Insert(ZoombieList, runningThread->tid);
+	}
+	setcontext(&schedulerContext);
 }
 
 
@@ -156,16 +160,24 @@ int myield(void)
 	runningThread->execTime = t1 - t0;
 	runningThread->state = READY;
 	readyList = InsertSorted(readyList, runningThread);
-	return Scheduler(); 
+	return Scheduler();
 }
 
 int mjoin(int thr)
 {
 	t1 = GetTime();
 	runningThread->execTime = t1 - t0;
-	runningThread->state = BLOCKED;
-	runningThread->waitingThread = thr;
-	blockedList = Insert (blockedList, runningThread);
+
+	TIDList* ptaux;
+	if ((ptaux = Remove_tid(ZoombieList, thr)) != NULL)
+		runningThread->state = READY;
+		ZoombieList = ptaux;
+	else
+	{
+		runningThread->state = BLOCKED;
+		runningThread->waitingThread = thr;
+		blockedList = Insert (blockedList, runningThread);
+	}
 	return Scheduler();
 }
 
