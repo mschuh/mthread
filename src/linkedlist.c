@@ -5,7 +5,7 @@
 //                                                                  *
 //                 INF 01142 - Sistemas Operacionais I              *
 //                                                                  *
-//               libmthread - Gerenciador de threads N:1           *
+//               libmthread - Gerenciador de threads N:1            *
 //                                                                  *
 //                     Felipe Nogueira - 219827                     *
 //                    Matheus Schuh - 219824                        *
@@ -76,6 +76,29 @@ TCBList* Insert(TCBList* list, TCB* newElement)
        list = new_node;
        
        return list;
+}
+
+TCBList* InsertLast(TCBList* list, TCB* newElement)
+{
+       TCBList *new_node; //new element
+	TCBList *ptaux = list;
+
+	new_node = (TCBList*) malloc(sizeof(TCBList)); //allocates the new node
+	new_node->TCBElement = newElement; //inserts the information of the new node
+	
+	if (ptaux == NULL) //empty list
+	{
+		list = new_node;
+		list->next = NULL;
+		return list;
+	}
+
+	while(ptaux->next != NULL)
+		ptaux = ptaux->next;
+	ptaux->next = new_node;
+	new_node->next = NULL;
+
+	return list;	
 }
 
 //Insert the element in the correct place by execTime, keeping the list sorted
