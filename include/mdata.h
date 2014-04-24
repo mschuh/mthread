@@ -34,7 +34,7 @@ typedef struct TCBList{
 
 typedef struct {
 	int flag;
-	TCB * next;
+	TCBList * listMutex;
 } mmutex_t;
 
 #endif

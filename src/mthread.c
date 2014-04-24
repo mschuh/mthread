@@ -100,18 +100,30 @@ void CreateSchedulerContext (void)
 void ExitThread (void)
 {
 	TCB* blockedThread;
+<<<<<<< HEAD
 	blockedThread = RemoveWaiting(&blockedList, runningThread->tid); //verifies if any thread is blocked waiting for the end of this one
+=======
+
+	blockedThread = RemoveWaiting(&blockedList, runningThread->tid);
+>>>>>>> FETCH_HEAD
 
 	if (blockedThread != NULL)
 	{
 		//put the blocked thread in the ready list again
 		blockedThread->state = READY;
 		blockedThread->waitingThread = -1;
+<<<<<<< HEAD
 		readyList = InsertSorted(readyList, blockedThread); 
 	}
 
 	Remove(&aliveList, runningThread->tid); //kills the thread removing it from the alive list
 	free(runningThread); //deallocates the TCB
+=======
+		readyList = InsertSorted(readyList, blockedThread);
+	}
+
+	Remove(&aliveList, runningThread->tid);
+>>>>>>> FETCH_HEAD
 	setcontext(&schedulerContext);
 }
 
@@ -187,6 +199,10 @@ int mcreate (void (*start_routine)(void*), void *arg)
 			newThread->context.uc_link = &exitThreadContext; //return point to a function that deals with thread termination
 			makecontext (&(newThread->context), (void (*)(void))start_routine, 1, arg);
 			readyList = InsertSorted(readyList, newThread);
+<<<<<<< HEAD
+=======
+
+>>>>>>> FETCH_HEAD
 			aliveList = Insert(aliveList, newThread);
 
 			return newThread->tid;
@@ -206,8 +222,13 @@ int myield(void)
         return ERROR_CODE;
 
 	t1 = GetTime();
+<<<<<<< HEAD
 	runningThread->execTime = t1 - t0; //calculates execution time
 	runningThread->state = READY; //puts thread in ready list
+=======
+	runningThread->execTime = t1 - t0;
+	runningThread->state = READY;
+>>>>>>> FETCH_HEAD
 	readyList = InsertSorted(readyList, runningThread);
 
 	runningThread->contextFlag = 0;
@@ -235,7 +256,11 @@ int mjoin(int thr)
 		runningThread->state = BLOCKED;
 		runningThread->waitingThread = thr;
 		blockedList = Insert(blockedList, runningThread);
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> FETCH_HEAD
 		runningThread->contextFlag = 0;
 		getcontext(&(runningThread->context));
 
@@ -258,6 +283,54 @@ int mjoin(int thr)
 		    if (Scheduler() == ERROR_CODE)
 		        return ERROR_CODE;
 		}
+	}
+
+	return SUCESS_CODE;
+}
+
+int mmutex_init(mmutex_t *mutex) //initializes a mutex variable
+{
+	mutex->flag = 0;
+	mutex->listMutex = NULL;
+	
+	return SUCESS_CODE;
+}
+int mlock (mmutex_t * mutex)
+{
+	if(mutex->flag == 0) //if the critic zone is free 
+	{
+		mutex->flag = 1;
+		return SUCESS_CODE;
+	}
+	else	//the critic zone is not free, blocks the thread
+	{
+		runningThread->state = BLOCKED;
+		runningThread->waitingThread = -1;
+		InsertLast(mutex->listMutex, runningThread);
+
+		//saves the context because the thread was blocked
+		runningThread->contextFlag = 0; 
+		getcontext(&(runningThread->context));
+		if (runningThread->contextFlag == 0)
+		{
+			runningThread->contextFlag = 1;
+        		if (Scheduler() == ERROR_CODE)
+				return ERROR_CODE;
+		}
+	}
+	
+	return SUCESS_CODE;
+}
+int munlock (mmutex_t *mutex)
+{
+	mutex->flag = 0; //critic zone now is free
+	
+	TCB* mutexThread = (TCB*)malloc(sizeof(TCB));
+	
+	if (mutex->listMutex != NULL) //if the list is not empty
+	{	
+		mutexThread = Pop(&mutex->listMutex);
+		mutexThread->state = READY; //set the next thread waiting tu use the critic zone to ready
 	}
 
 	return SUCESS_CODE;
