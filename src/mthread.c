@@ -219,7 +219,7 @@ int mjoin(int thr)
 	return SUCESS_CODE;
 }
 
-int mmutex_init(mmutex_t *mutex)
+int mmutex_init(mmutex_t *mutex) //initializes a mutex variable
 {
 	mutex->flag = 0;
 	mutex->listMutex = NULL;
@@ -228,30 +228,40 @@ int mmutex_init(mmutex_t *mutex)
 }
 int mlock (mmutex_t * mutex)
 {
-	if(mutex->flag == 0)
+	if(mutex->flag == 0) //if the critic zone is free 
 	{
 		mutex->flag = 1;
 		return SUCESS_CODE;
 	}
-	else
+	else	//the critic zone is not free, blocks the thread
 	{
 		runningThread->state = BLOCKED;
 		runningThread->waitingThread = -1;
 		InsertLast(mutex->listMutex, runningThread);
+
+		//saves the context because the thread was blocked
+		runningThread->contextFlag = 0; 
+		getcontext(&(runningThread->context));
+		if (runningThread->contextFlag == 0)
+		{
+			runningThread->contextFlag = 1;
+        		if (Scheduler() == ERROR_CODE)
+				return ERROR_CODE;
+		}
 	}
 	
 	return SUCESS_CODE;
 }
 int munlock (mmutex_t *mutex)
 {
-	mutex->flag = 0;
+	mutex->flag = 0; //critic zone now is free
 	
 	TCB* mutexThread = (TCB*)malloc(sizeof(TCB));
 	
-	if (mutex->listMutex != NULL)
+	if (mutex->listMutex != NULL) //if the list is not empty
 	{	
 		mutexThread = Pop(&mutex->listMutex);
-		mutexThread->state = READY;
+		mutexThread->state = READY; //set the next thread waiting tu use the critic zone to ready
 	}
 
 	return SUCESS_CODE;
