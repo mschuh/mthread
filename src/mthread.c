@@ -281,7 +281,7 @@ int mlock (mmutex_t * mutex)
 	{
 		runningThread->state = BLOCKED;
 		runningThread->waitingThread = -1;
-		InsertLast(mutex->listMutex, runningThread);
+		mutex->listMutex = InsertLast(mutex->listMutex, runningThread);
 
 		runningThread->contextFlag = 0;
 		getcontext(&(runningThread->context)); //save the context because the thread was blocked
@@ -301,7 +301,7 @@ int munlock (mmutex_t *mutex)
 	
 	TCB* mutexThread = (TCB*)malloc(sizeof(TCB));
 	
-	if (mutex->listMutex != NULL) //pops of the list the next thread allowes to use the critical section
+	if (mutex->listMutex != NULL) //pops of the list the next thread allowed to use the critical section
 	{	
 		mutexThread = Pop(&mutex->listMutex);
 		mutexThread->state = READY;
