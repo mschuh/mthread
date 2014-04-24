@@ -219,4 +219,42 @@ int mjoin(int thr)
 	return SUCESS_CODE;
 }
 
+int mmutex_init(mmutex_t *mutex)
+{
+	mutex->flag = 0;
+	mutex->listMutex = NULL;
+	
+	return SUCESS_CODE;
+}
+int mlock (mmutex_t * mutex)
+{
+	if(mutex->flag == 0)
+	{
+		mutex->flag = 1;
+		return SUCESS_CODE;
+	}
+	else
+	{
+		runningThread->state = BLOCKED;
+		runningThread->waitingThread = -1;
+		InsertLast(mutex->listMutex, runningThread);
+	}
+	
+	return SUCESS_CODE;
+}
+int munlock (mmutex_t *mutex)
+{
+	mutex->flag = 0;
+	
+	TCB* mutexThread = (TCB*)malloc(sizeof(TCB));
+	
+	if (mutex->listMutex != NULL)
+	{	
+		mutexThread = Pop(&mutex->listMutex);
+		mutexThread->state = READY;
+	}
+
+	return SUCESS_CODE;
+}
+
 
