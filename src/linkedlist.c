@@ -23,7 +23,7 @@ TCB* Pop(TCBList** list)
     return popped;
 }
 
-TCBList* InsertLast(TCBList* list, TCB* newElement)
+TCBList* InsertLast(TCBList* list, TCB* newElement) //inserts a new node in the end of the list
 {
        TCBList *new_node; //new element
 
