@@ -1,4 +1,4 @@
-all: hellothread mjoinerror myieldtest testealexandre
+all: hellothread mjoinerror myieldtest
 
 myieldtest: myieldtest.c ../lib/libmthread.a
 	@gcc -c -g -Wall myieldtest.c -o ../bin/myieldtest.o

@@ -33,7 +33,6 @@ TCBList* CreateList(void)
        return NULL;
 }
 
-<<<<<<< HEAD
 //Print nodes by TID and ExecTime
 void PrintList(TCBList* list)
 {
@@ -49,8 +48,6 @@ void PrintList(TCBList* list)
 }
 
 //Returns the first element from the list removing it
-=======
->>>>>>> FETCH_HEAD
 TCB* Pop(TCBList** list)
 {
     TCB* popped = (TCB*)malloc(sizeof(TCB));
@@ -67,12 +64,8 @@ TCB* Pop(TCBList** list)
     return popped;
 }
 
-<<<<<<< HEAD
 //Insert the element in the first position of the list
 TCBList* Insert(TCBList* list, TCB* newElement)
-=======
-TCBList* InsertLast(TCBList* list, TCB* newElement) //inserts a new node in the end of the list
->>>>>>> FETCH_HEAD
 {
        TCBList *new_node; //new element
 
@@ -82,16 +75,10 @@ TCBList* InsertLast(TCBList* list, TCB* newElement) //inserts a new node in the 
        new_node->next = list;
        list = new_node;
        
-<<<<<<< HEAD
        return list;
 }
 
 //Insert the element in the correct place by execTime, keeping the list sorted
-=======
-       return list;	
-}
-
->>>>>>> FETCH_HEAD
 TCBList* InsertSorted(TCBList* list, TCB* newElement)
 {
        TCBList *new_node; //new element
@@ -105,7 +92,7 @@ TCBList* InsertSorted(TCBList* list, TCB* newElement)
        new_node->TCBElement = newElement;
 
        //search for the right position
-       while ((ptaux!=NULL) && (ptaux->TCBElement->execTime < newElement->execTime))
+       while ((ptaux!=NULL) && (ptaux->TCBElement->execTime <= newElement->execTime))
        {       
     	     ant = ptaux;
     	     ptaux = ptaux->next;
@@ -126,23 +113,7 @@ TCBList* InsertSorted(TCBList* list, TCB* newElement)
        return list;
 }
 
-<<<<<<< HEAD
 //Remove an element searching for it by its waitingThread field
-=======
-TCBList* Insert(TCBList* list, TCB* newElement)
-{
-       TCBList *new_node; //new element
-
-       new_node = (TCBList*) malloc(sizeof(TCBList)); //allocates the new node
-       new_node->TCBElement = newElement; //inserts the information of the new node
-
-       new_node->next = list;
-       list = new_node;
-       
-       return list;
-}
-
->>>>>>> FETCH_HEAD
 TCB* RemoveWaiting(TCBList** list, int waitingThread)
 {
      TCB* removed = (TCB*)malloc(sizeof(TCB));
@@ -173,10 +144,7 @@ TCB* RemoveWaiting(TCBList** list, int waitingThread)
     return removed;
 }
 
-<<<<<<< HEAD
 //Remove an element searching for it by its tid field
-=======
->>>>>>> FETCH_HEAD
 void Remove(TCBList** list, int tid)
 {
      TCBList *prev = NULL; //auxiliar pointer to the previous position

@@ -1,4 +1,4 @@
-#include "../include/mthread.h"
+#include "mthread.h"
 #include <stdlib.h>
 #include <stdio.h>
 
