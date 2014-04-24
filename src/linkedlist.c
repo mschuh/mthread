@@ -23,6 +23,18 @@ TCB* Pop(TCBList** list)
     return popped;
 }
 
+TCBList* InsertLast(TCBList* list, TCB* newElement)
+{
+       TCBList *new_node; //new element
+
+       new_node = (TCBList*) malloc(sizeof(TCBList)); //allocates the new node
+       new_node->TCBElement = newElement; //inserts the information of the new node
+
+       new_node->next = list;
+       list = new_node;
+       
+       return list;	
+}
 
 TCBList* InsertSorted(TCBList* list, TCB* newElement)
 {
