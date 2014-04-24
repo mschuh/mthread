@@ -8,6 +8,7 @@
 TCBList* CreateList(void);
 TCB* Pop(TCBList** list);
 TCBList* Insert(TCBList* list, TCB* newElement);
+TCBList* InsertLast(TCBList* list, TCB* newElement);
 TCBList* InsertSorted(TCBList* list, TCB* newElement);
 void Remove(TCBList** list, int tid);
 TCB* RemoveWaiting(TCBList** list, int waitingThread);
