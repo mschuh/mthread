@@ -15,7 +15,7 @@
 #include <stdlib.h>
 
 typedef enum {
-	READY, RUNNING, BLOCKED, FINISHED
+	READY, RUNNING, BLOCKED
 }state_t;
 
 typedef struct {

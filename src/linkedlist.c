@@ -1,29 +1,85 @@
+//*******************************************************************
+//                                                                  *
+//              Universidade Federal do Rio Grande do Sul           *
+//                   Instituto de Informática                       *
+//                                                                  *
+//                 INF 01142 - Sistemas Operacionais I              *
+//                                                                  *
+//               libumthread - Gerenciador de threads N:1           *
+//                                                                  *
+//                     Felipe Nogueira - 219827                     *
+//                    Matheus Schuh - 219824                        *
+//                                                                  *
+//*******************************************************************
+
+
+
+//************************** INCLUDES *******************************
+
+
+
 #include "../include/linkedlist.h"
 #include <stdio.h>
 #include <stdlib.h>
+
+
+
+//************* MAIN FUNCTIONS PRESENTED IN HEADER ******************
+
+
 
 TCBList* CreateList(void)
 {
        return NULL;
 }
 
-TCB* Pop(TCBList* list)
+//Print nodes by TID and ExecTime
+void PrintList(TCBList* list)
+{
+    TCBList* node;
+    node=list;
+    printf("\nList Nodes\n");
+    while(node!=NULL)
+    {
+        printf("TID: %i ", node->TCBElement->tid);
+        printf("ExecTime: %f ", node->TCBElement->execTime);
+        node=node->next;
+    }
+}
+
+//Returns the first element from the list removing it
+TCB* Pop(TCBList** list)
 {
     TCB* popped = (TCB*)malloc(sizeof(TCB));
-    TCBList* ptaux = list;
+    TCBList* ptaux = *list;
 
     if (ptaux == NULL) //If list is empty
         return NULL;
 
-    popped = list->TCBElement;
-    list = list->next;
+    popped = ptaux->TCBElement;
+    *list = ptaux->next;
 
     free(ptaux);
 
     return popped;
 }
 
-void InsertSorted(TCBList* list, TCB* newElement)
+//Insert the element in the first position of the list
+TCBList* Insert(TCBList* list, TCB* newElement)
+{
+       TCBList *new_node; //new element
+
+       new_node = (TCBList*) malloc(sizeof(TCBList)); //allocates the new node
+       new_node->TCBElement = newElement; //inserts the information of the new node
+
+       new_node->next = list;
+       list = new_node;
+       
+       return list;
+}
+
+//Insert the element in the correct place by execTime, keeping the list sorted
+TCBList* InsertSorted(TCBList* list, TCB* newElement)
 {
        TCBList *new_node; //new element
        TCBList *ant = NULL; //auxiliar pointer to the previous position
@@ -36,10 +92,10 @@ void InsertSorted(TCBList* list, TCB* newElement)
        new_node->TCBElement = newElement;
 
        //search for the right position
-       while ((ptaux!=NULL) && (ptaux->TCBElement->execTime <= newElement->execTime))
-       {
-             ant = ptaux;
-             ptaux = ptaux->next;
+       while ((ptaux!=NULL) && (ptaux->TCBElement->execTime < newElement->execTime))
+       {       
+    	     ant = ptaux;
+    	     ptaux = ptaux->next;
        }
 
        //insert the element
@@ -53,24 +109,16 @@ void InsertSorted(TCBList* list, TCB* newElement)
             new_node->next = ant->next;
             ant->next = new_node;
        }
+       
+       return list;
 }
 
-void Insert(TCBList* list, TCB* newElement)
-{
-       TCBList *new_node; //new element
-
-       new_node = (TCBList*) malloc(sizeof(TCBList)); //allocates the new node
-       new_node->TCBElement = newElement; //inserts the information of the new node
-
-       new_node->next = list;
-       list = new_node;
-}
-
-TCB* RemoveWaiting(TCBList* list, int waitingThread)
+//Remove an element searching for it by its waitingThread field
+TCB* RemoveWaiting(TCBList** list, int waitingThread)
 {
      TCB* removed = (TCB*)malloc(sizeof(TCB));
      TCBList *prev = NULL; //auxiliar pointer to the previous position
-     TCBList *ptaux = list; //auxiliar pointer to run through the list
+     TCBList *ptaux = *list; //auxiliar pointer to run through the list
 
      //search for the element in the list
      while (ptaux !=NULL && (ptaux->TCBElement->waitingThread != waitingThread))
@@ -85,7 +133,7 @@ TCB* RemoveWaiting(TCBList* list, int waitingThread)
        return NULL; //returns the original list
 
     if (prev == NULL) //the first element will be removed
-      list = ptaux->next;
+      *list = ptaux->next;
 
     else //it'll remove from the middle or the end of the list
       prev->next = ptaux->next;
@@ -96,10 +144,11 @@ TCB* RemoveWaiting(TCBList* list, int waitingThread)
     return removed;
 }
 
-void Remove(TCBList* list, int tid)
+//Remove an element searching for it by its tid field
+void Remove(TCBList** list, int tid)
 {
      TCBList *prev = NULL; //auxiliar pointer to the previous position
-     TCBList *ptaux = list; //auxiliar pointer to run through the list
+     TCBList *ptaux = *list; //auxiliar pointer to run through the list
 
      //search for the element in the list
      while (ptaux !=NULL && (ptaux->TCBElement->tid != tid))
@@ -111,13 +160,15 @@ void Remove(TCBList* list, int tid)
      //verify if the element has been found
 
     if (prev == NULL) //the first element will be removed
-      list = ptaux->next;
+      *list = ptaux->next;
 
     else //it'll remove from the middle or the end of the list
       prev->next = ptaux->next;
-
+      
+      free(ptaux);
 }
 
+//Returns 0 if the element with the tid parameter is found in the list. Otherwise, returns -1
 int searchTID (TCBList* list, int tid)
 {
     TCBList* ptaux = list;
@@ -131,12 +182,13 @@ int searchTID (TCBList* list, int tid)
     return ERROR_CODE;
 }
 
-int searchWaiting(TCBList* list, int tid)
+//Returns 0 if the element with the waitingThread parameter is found in the list. Otherwise, returns -1
+int searchWaiting(TCBList* list, int waitingTid)
 {
     TCBList* ptaux = list;
     while (ptaux != NULL)
     {
-        if(ptaux->TCBElement->waitingThread == tid)
+        if(ptaux->TCBElement->waitingThread == waitingTid)
             return SUCESS_CODE;
         ptaux = ptaux->next;
     }
@@ -155,117 +207,4 @@ void DeleteList(TCBList* list)
          free(ptaux);
    }
    free(list);
-}
-
-//Finds length of list, which is usefull in selecting a random pivot
-int ListLength (TCBList* list)
-{
-    TCBList *ptaux = list;
-
-    int i=0;
-    while(ptaux!=NULL)
-    {
-        i++;
-        ptaux = ptaux->next;
-    }
-    return i;
-}
-
-//Print nodes by TID and ExecTime
-void printList(TCBList* list)
-{
-    TCBList* node;
-    node=list;
-    printf("\nList Nodes\n");
-    while(node!=NULL)
-    {
-        printf("TID: %i ", node->TCBElement->tid);
-        printf("ExecTime: %f ", node->TCBElement->execTime);
-        node=node->next;
-    }
-}
-
-// Selects a random pivot point
-TCBList* SelectPivot(TCBList* list)
-{
-    int j, n, i;
-    n = ListLength(list);
-
-    TCBList* pivot = list;
-
-    j = rand()%n;
-
-    for (i = 0; i < j; ++i)
-    {
-        pivot = pivot->next;
-    }
-
-    return pivot;
-}
-
-TCBList* SortList (TCBList* list) //Sort by execTime
-{
-  // Return NULL list
-    if (ListLength(list) <= 1)
-  return list;
-
-    TCBList *less=NULL, *more=NULL, *next, *end, *ptaux = NULL;
-
-    // Select a random pivot point
-    TCBList* pivot = SelectPivot(list);
-
-    // Remove pivot from list
-    while(list !=NULL)
-    {
-        next = list->next;
-
-        if (list != pivot) //compares by the adress
-        {
-            list->next = ptaux;
-            ptaux = list;
-        }
-
-        list = next;
-    }
-
-    // Divide & Conq
-    while(ptaux != NULL)
-    {
-        next = ptaux->next;
-
-        if(ptaux->TCBElement->execTime <= pivot->TCBElement->execTime)
-        {
-            ptaux->next = less;
-            less = ptaux;
-        }
-        else
-        {
-            ptaux->next = more;
-            more = ptaux;
-        }
-        ptaux = next;
-    }
-
-    // Recursive Calls
-    less = SortList(less);
-    more = SortList(more);
-
-    // Merge
-    if(less != NULL)
-    {
-        end = less;
-        while(end->next != NULL)
-        {
-            end = end->next;
-        }
-        pivot->next = more;
-        end->next = pivot;
-
-        return less;
-    }
-    else
-    {
-        pivot->next = more;
-        return pivot;
-    }
 }
